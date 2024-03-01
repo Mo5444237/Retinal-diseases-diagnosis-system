@@ -11,6 +11,13 @@ const Admin = sequelize.define(
       allowNull: false,
       primaryKey: true,
     },
+    accountId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: Account,
+        key: 'id'
+      }
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
