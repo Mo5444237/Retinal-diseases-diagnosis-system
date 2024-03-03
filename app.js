@@ -1,7 +1,40 @@
 require("dotenv").config();
 
 const express = require("express");
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const compression = require('compression');
+const cors = require('cors');
+const path = require('path');
+
+const authRoutes = require('./routes/auth');
+
 const app = express(); 
+
+const corsOptions = {
+  origin: '*',
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.use(compression());
+app.use(bodyParser.json());
+app.use(cookieParser());
+
+app.use("/images", express.static(path.join(__dirname, "images")));
+
+
+app.use('/auth', authRoutes);
+
+
+app.use((error, req, res, next) => {
+  console.log("Error Middleware: \n" + error);
+  const status = error.statusCode || 500;
+  const message = error.message;
+  const data = error.data || [];
+  res.status(status).json({ message: message, errors: data });
+});
+
 
 const sequelize = require("./util/db");
 const Account = require("./models/account");
