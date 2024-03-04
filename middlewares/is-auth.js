@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const user = require("../models/account");
 
 // validate the user token
 module.exports = (req, res, next) => {

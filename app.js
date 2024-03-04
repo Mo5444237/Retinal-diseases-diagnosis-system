@@ -8,6 +8,7 @@ const cors = require('cors');
 const path = require('path');
 
 const authRoutes = require('./routes/auth');
+const patientRoutes = require('./routes/patient');
 
 const app = express(); 
 
@@ -25,6 +26,7 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 
 
 app.use('/auth', authRoutes);
+app.use('/patient', patientRoutes);
 
 
 app.use((error, req, res, next) => {
