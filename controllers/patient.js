@@ -2,7 +2,7 @@ const { validationResult } = require("express-validator");
 const Appointment = require("../models/appointment");
 
 exports.makeAppointment = async (req, res, next) => {
-  const { patientId } = req.patientId;
+  const patientId  = req.patientId;
   const { doctorId, date, time } = req.body;
 
   const errors = validationResult(req);
@@ -22,12 +22,10 @@ exports.makeAppointment = async (req, res, next) => {
       time,
     });
 
-    res
-      .status(201)
-      .json({
-        message: "Appointment created successfully.",
-        appointment: newAppointment,
-      });
+    res.status(201).json({
+      message: "Appointment created successfully.",
+      appointment: newAppointment,
+    });
   } catch (error) {
     next(error);
   }
@@ -98,6 +96,7 @@ exports.editAppointment = async (req, res, next) => {
         patientId: patientId,
       },
     });
+
     await appointment.update({
       date,
       time,

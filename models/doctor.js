@@ -36,7 +36,6 @@ const Doctor = sequelize.define(
     },
     description: {
       type: DataTypes.STRING,
-      allowNull: false,
     },
   },
   { timestamps: false }

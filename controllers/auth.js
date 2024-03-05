@@ -5,9 +5,11 @@ const {
   generateAccessToken,
   generateRefreshToken,
 } = require("../util/generate-token");
+const Patient = require("../models/patient");
+const Doctor = require("../models/doctor");
 
 exports.signup = async (req, res, next) => {
-  const { email, password, role } = req.body;
+  const { email, password, role, name, DOB, address, phone } = req.body;
 
   const errors = validationResult(req);
 
@@ -25,6 +27,27 @@ exports.signup = async (req, res, next) => {
       password: hasedPassword,
       role: role || "patient",
     });
+
+    const accountId = user.id;
+
+    console.log(accountId)
+    if (role !== "doctor") {
+      const patient = await Patient.create({
+        accountId: accountId,
+        name: name,
+        DOB: DOB,
+        address: address,
+        phone: phone,
+      });
+    } else if (role === "doctor") {
+      const doctor = await Doctor.create({
+        accountId: accountId,
+        name: name,
+        DOB: DOB,
+        address: address,
+        phone: phone,
+      });
+    }
 
     res.status(201).json({ message: "Account created.", userId: user.id });
   } catch (error) {
