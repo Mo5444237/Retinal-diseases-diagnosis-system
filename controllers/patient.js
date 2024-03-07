@@ -1,12 +1,36 @@
 const { validationResult } = require("express-validator");
 const Appointment = require("../models/appointment");
+const Doctor = require("../models/doctor");
+
+exports.getAvailableAppointments = async (req, res, next) => {
+  const { doctorId, date } = req.body;
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new Error("Validation failed");
+    error.statusCode = 422;
+    error.data = errors.array();
+    return next(error);
+  }
+
+  try {
+    const doctor = await Doctor.findByPk(doctorId);
+
+    const availableAppointments = await doctor.getAvailableAppointments(date);
+
+    res
+      .status(200)
+      .json({ availableAppointments: Object.values(availableAppointments) });
+  } catch (error) {
+    next(error);
+  }
+};
 
 exports.makeAppointment = async (req, res, next) => {
-  const patientId  = req.patientId;
+  const patientId = req.patientId;
   const { doctorId, date, time } = req.body;
 
   const errors = validationResult(req);
-
   if (!errors.isEmpty()) {
     const error = new Error("Validation failed");
     error.statusCode = 422;
