@@ -2,7 +2,6 @@ const Patient = require("../models/patient");
 
 module.exports = async (req, res, next) => {
     const accountId = req.userId;
-    console.log(accountId)
 
     try {
         const patient = await Patient.findOne({

@@ -9,6 +9,7 @@ const path = require('path');
 
 const authRoutes = require('./routes/auth');
 const patientRoutes = require('./routes/patient');
+const doctorRoutes = require('./routes/doctor');
 
 const app = express(); 
 
@@ -27,6 +28,7 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 
 app.use('/auth', authRoutes);
 app.use('/patient', patientRoutes);
+app.use('/doctor', doctorRoutes);
 
 
 app.use((error, req, res, next) => {

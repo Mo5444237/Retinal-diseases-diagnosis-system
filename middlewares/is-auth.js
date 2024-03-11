@@ -6,7 +6,7 @@ module.exports = (req, res, next) => {
   if (!authHeader) {
     const error = new Error("Invalid token");
     error.statusCode = 401;
-    throw error;
+    return next(error);
   }
   // "Authorization": 'Bearer ' + token
   const token = authHeader.split(" ")[1];
@@ -20,7 +20,7 @@ module.exports = (req, res, next) => {
   if (!decodedToken) {
     const error = new Error("Invalid token");
     error.statusCode = 401;
-    throw error;
+    return next(error);
   }
 
   // keep user id in the req

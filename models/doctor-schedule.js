@@ -19,14 +19,14 @@ const Schedule = sequelize.define(
       },
     },
     day: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING,
       allowNull: false,
     },
-    start_time: {
+    startTime: {
       type: DataTypes.TIME,
       allowNull: false,
     },
-    end_time: {
+    endTime: {
       type: DataTypes.TIME,
       allowNull: false,
     },
@@ -34,6 +34,6 @@ const Schedule = sequelize.define(
   { timestamps: false }
 );
 
-
+// Schedule.sync({force: true})
 
 module.exports = Schedule;

@@ -30,7 +30,6 @@ exports.signup = async (req, res, next) => {
 
     const accountId = user.id;
 
-    console.log(accountId)
     if (role !== "doctor") {
       const patient = await Patient.create({
         accountId: accountId,

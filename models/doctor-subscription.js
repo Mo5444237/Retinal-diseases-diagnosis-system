@@ -18,15 +18,15 @@ const Subscription = sequelize.define(
         key: "id",
       },
     },
-    start_date: {
+    startDate: {
       type: DataTypes.DATE,
       allowNull: false,
     },
-    end_date: {
+    endDate: {
       type: DataTypes.DATE,
       allowNull: false,
     },
-    payment_status: {
+    paymentStatus: {
       type: DataTypes.STRING,
       allowNull: false,
     },
