@@ -13,14 +13,14 @@ const Appointment = sequelize.define(
       primaryKey: true,
     },
     doctorId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       references: {
         model: Doctor,
         key: "id",
       },
     },
     patientId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       references: {
         model: Patient,
         key: "id",
@@ -42,6 +42,10 @@ const Appointment = sequelize.define(
     prescription: {
       type: DataTypes.STRING,
     },
+    images: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: []
+    } 
   },
   { timestamps: false }
 );

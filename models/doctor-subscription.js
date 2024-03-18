@@ -12,7 +12,7 @@ const Subscription = sequelize.define(
       primaryKey: true,
     },
     doctorId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       references: {
         model: Doctor,
         key: "id",

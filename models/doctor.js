@@ -1,24 +1,28 @@
-const { DataTypes } = require("sequelize");
+const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../util/db");
 const Account = require("./account");
 const Appointment = require("./appointment");
 const { getAvailableTime } = require("../util/get-available-time");
+const Schedule = require("./doctor-schedule");
 
 const Doctor = sequelize.define(
   "doctor",
   {
     id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      allowNull: false,
+      type: DataTypes.UUID,
+      defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
     },
     accountId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       references: {
         model: Account,
         key: "id",
       },
+    },
+    profileImg: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     name: {
       type: DataTypes.STRING,
@@ -44,24 +48,47 @@ const Doctor = sequelize.define(
 );
 
 Doctor.prototype.getAvailableAppointments = async function (date) {
+  const selectedDate = new Date(date);
   const currentAppointments = await Appointment.findAll({
     where: {
       doctorId: this.id,
-      date: new Date(date),
+      date: selectedDate,
     },
     attributes: ["time"],
   });
 
-  // const doctorSchedule = await Schedule.findOne({
-  //   where: {
-  //     doctorId: this.id,
-  //     day: new Date(date).
-  //   }
-  // });
+  const dayNames = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
+  // Get the day of the week as a number (0 to 6)
+  const dayOfWeek = selectedDate.getDay();
+
+  // Map the number to the corresponding day name
+  const dayName = dayNames[dayOfWeek];
+
+  const doctorSchedule = await Schedule.findOne({
+    where: {
+      doctorId: this.id,
+      day: dayName,
+    },
+  });
+
+  if (!doctorSchedule) {
+    const error = new Error(`Doctor isn\'t available on ${dayName}`);
+    error.statusCode = 422;
+    throw error;
+  }
 
   // need to implement scheduling
-  const startHour = "8:00:00".split(":")[0];
-  const endHour = "22:00:00".split(":")[0];
+  const startHour = doctorSchedule.startTime.split(":")[0];
+  const endHour = doctorSchedule.endTime.split(":")[0];
 
   const appointments = getAvailableTime(+startHour, +endHour);
 

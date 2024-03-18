@@ -2,6 +2,37 @@ const { body, check } = require("express-validator");
 const Doctor = require("../models/doctor");
 const Appointment = require("../models/appointment");
 
+exports.editProfileValidation = [
+  body("name", "Enter a valid name.")
+    .optional()
+    .trim()
+    .matches(
+      /(^[A-Za-z]{3,16})([ ]{0,1})([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})/
+    ),
+  body("DOB")
+    .optional()
+    .trim()
+    .custom((value, { req }) => {
+      const DOB = new Date(value).getFullYear();
+      const currentDate = new Date().getFullYear();
+
+      const age = currentDate - DOB;
+
+      if (age < 18 || age > 80) {
+        return Promise.reject("The age has to be within 18 to 80 years.");
+      }
+      return DOB;
+    }),
+  body("address", "Enter a valid address")
+    .optional()
+    .trim()
+    .isLength({ min: 3, max: 255 }),
+  body("phone", "Enter a valid phone number.")
+    .optional()
+    .trim()
+    .matches(/^01[0125][0-9]{8}$/),
+];
+
 exports.getAvailableAppointmentsValidation = [
   body("doctorId")
     .trim()

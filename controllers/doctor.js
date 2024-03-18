@@ -1,6 +1,61 @@
 const { validationResult } = require("express-validator");
 const Schedule = require("../models/doctor-schedule");
 const Appointment = require("../models/appointment");
+const Doctor = require("../models/doctor");
+
+exports.getDoctorData = async (req, res, next) => {
+  const doctorId = req.params.doctorId;
+  try {
+    const doctor = await Doctor.findByPk(doctorId, {
+      attributes: {
+        exclude: ["accountId", "DOB"],
+      },
+    });
+
+    if (!doctor) {
+      const error = new Error("Doctor not found");
+      error.statusCode = 404;
+      throw error;
+    }
+    res.status(200).json({ doctor });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getProfile = async (req, res, next) => {
+  const doctorId = req.doctorId;
+  try {
+    const doctor = await Doctor.findByPk(doctorId);
+    res.status(200).json({ doctor });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.editProfile = async (req, res, next) => {
+  const updatedData = req.body;
+  const image = req.file;
+  const doctorId = req.doctorId;
+
+  try {
+    const doctor = await Doctor.findByPk(doctorId);
+    if (image) {
+      doctor.profileImg = image.path.replaceAll("\\", "/");
+    }
+
+    doctor.name = updatedData.name || doctor.name;
+    doctor.phone = updatedData.phone || doctor.phone;
+    doctor.address = updatedData.address || doctor.address;
+    doctor.DOB = updatedData.DOB || doctor.DOB;
+    doctor.description = updatedData.description || doctor.description;
+
+    await doctor.save();
+    res.status(200).json("Profile updated successfully.");
+  } catch (error) {
+    next(error);
+  }
+};
 
 exports.getAppointments = async (req, res, next) => {
   const date = new Date(req.body.date) || new Date().setHours(0, 0, 0, 0);
@@ -56,14 +111,10 @@ exports.getSchedule = async (req, res, next) => {
   const doctorId = req.doctorId;
 
   try {
-    let queryObject = { doctorId: doctorId };
-
-    const { day } = req.body.day;
-    if (day) {
-      queryObject.day = day;
-    }
     const schedule = await Schedule.findAll({
-      where: queryObject,
+      where: {
+        doctorId,
+      },
     });
 
     res.status(200).json({ schedule });
@@ -113,12 +164,66 @@ exports.postSchedule = async (req, res, next) => {
 
 exports.writePrescription = async (req, res, next) => {
   const { appointmentId, prescription } = req.body;
+  const doctorId = req.doctorId;
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    const error = new Error("validation failed.");
+    error.statusCode = 422;
+    error.data = errors.array();
+    return next(error);
+  }
+
   try {
-    const appointment = await Appointment.findByPk(appointmentId);
+    const appointment = await Appointment.findOne({
+      where: {
+        id: appointmentId,
+        doctorId,
+      },
+    });
+
+    if (!appointment) {
+      const error = new Error("Appointment not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
     appointment.prescription = prescription;
+    appointment.status = "done";
     await appointment.save();
 
     res.status(200).json({ message: "prescription created successfully." });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.uploadAppointmentAttachments = async (req, res, next) => {
+  const { appointmentId } = req.body;
+  const doctorId = req.doctorId;
+  const imagesData = req.files;
+
+  try {
+    const appointment = await Appointment.findOne({
+      where: { id: appointmentId, doctorId },
+    });
+
+    if (!appointment) {
+      const error = new Error("Appointment not found.");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    console.log(appointment.images);
+    const images = imagesData.map((file) => {
+      return file.path.replaceAll("\\", "/");
+    });
+
+    appointment.images = [...appointment.images, ...images];
+    await appointment.save();
+
+    res.status(200).json("images uplaoded successfully.");
   } catch (error) {
     next(error);
   }

@@ -1,6 +1,35 @@
 const { validationResult } = require("express-validator");
 const Appointment = require("../models/appointment");
 const Doctor = require("../models/doctor");
+const Patient = require("../models/patient");
+
+exports.getProfile = async (req, res, next) => {
+  const patientId = req.patientId;
+  try {
+    const patient = await Patient.findByPk(patientId);
+    res.status(200).json({ patient });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.editProfile = async (req, res, next) => {
+  const patientId = req.patientId;
+  const { patientData } = req.body;
+  try {
+    const patient = await Patient.findByPk(patientId);
+
+    patient.name = patientData.name || patient.name;
+    patient.phone = patientData.phone || patient.phone;
+    patient.address = patientData.address || patient.address;
+    patient.DOB = patientData.DOB || patient.DOB;
+    await patient.save();
+
+    res.status(200).json({ message: "Profile updated successfully.", patient });
+  } catch (error) {
+    next(error);
+  }
+};
 
 exports.getAvailableAppointments = async (req, res, next) => {
   const { doctorId, date } = req.body;

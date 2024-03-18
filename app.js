@@ -10,6 +10,7 @@ const path = require('path');
 const authRoutes = require('./routes/auth');
 const patientRoutes = require('./routes/patient');
 const doctorRoutes = require('./routes/doctor');
+const adminRoutes = require('./routes/admin');
 
 const app = express(); 
 
@@ -29,6 +30,7 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 app.use('/auth', authRoutes);
 app.use('/patient', patientRoutes);
 app.use('/doctor', doctorRoutes);
+app.use('/admin', adminRoutes);
 
 
 app.use((error, req, res, next) => {
@@ -48,8 +50,6 @@ const Patient = require("./models/patient");
 const Doctor = require("./models/doctor");
 const Schedule = require("./models/doctor-schedule");
 const Subscription = require("./models/doctor-subscription");
-const Appointment = require("./models/appointment");
-const Attachment = require("./models/attachment");
 
 Account.hasMany(Contact);
 Contact.belongsTo(Account);
@@ -63,9 +63,6 @@ Schedule.belongsTo(Doctor);
 
 Doctor.hasMany(Subscription);
 Subscription.belongsTo(Doctor);
-
-Appointment.hasMany(Attachment);
-Attachment.belongsTo(Appointment);
 
 Doctor.belongsToMany(Patient, { through: "appointment" });
 Patient.belongsToMany(Doctor, { through: "appointment" });

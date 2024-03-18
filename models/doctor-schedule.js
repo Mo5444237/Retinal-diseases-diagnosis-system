@@ -5,22 +5,26 @@ const Doctor = require("./doctor");
 const Schedule = sequelize.define(
   "schedule",
   {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      allowNull: false,
-      primaryKey: true,
-    },
     doctorId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       references: {
         model: Doctor,
         key: "id",
       },
+      primaryKey: true,
     },
     day: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM(
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ),
       allowNull: false,
+      primaryKey: true,
     },
     startTime: {
       type: DataTypes.TIME,
@@ -31,7 +35,15 @@ const Schedule = sequelize.define(
       allowNull: false,
     },
   },
-  { timestamps: false }
+  {
+    indexes: [
+      {
+        unique: true,
+        fields: ["doctorId", "day"],
+      },
+    ],
+    timestamps: false,
+  }
 );
 
 // Schedule.sync({force: true})

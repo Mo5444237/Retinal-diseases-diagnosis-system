@@ -4,6 +4,7 @@ const {
   editAppointmentValidation,
   getAvailableAppointmentsValidation,
   cancelAppointmentValidation,
+  editProfileValidation,
 } = require("../validation/patient");
 const {
   makeAppointment,
@@ -12,12 +13,17 @@ const {
   editAppointment,
   cancelAppointment,
   getAvailableAppointments,
+  getProfile,
+  editProfile,
 } = require("../controllers/patient");
 const isAuth = require("../middlewares/is-auth");
 const isPatient = require("../middlewares/is-patient");
 const router = express.Router();
 
 router.use(isAuth, isPatient);
+
+router.get("/profile", getProfile);
+router.put("/profile", editProfileValidation, editProfile);
 
 router.post(
   "/get-available-appointments",
