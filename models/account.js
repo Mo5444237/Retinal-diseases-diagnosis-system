@@ -28,5 +28,4 @@ const Account = sequelize.define(
   { timestamps: false }
 );
 
-
 module.exports = Account;

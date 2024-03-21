@@ -68,3 +68,7 @@ exports.changePasswordValidation = [
     .trim()
     .custom((value, { req }) => value === req.body.password),
 ];
+
+exports.resetPasswordValidation = [
+  body("email", "Enter a valid email").trim().isEmail().normalizeEmail(),
+];

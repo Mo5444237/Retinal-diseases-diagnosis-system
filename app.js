@@ -36,7 +36,7 @@ app.use('/admin', adminRoutes);
 app.use((error, req, res, next) => {
   console.log("Error Middleware: \n" + error);
   const status = error.statusCode || 500;
-  const message = error.message;
+  const message = error.message || "Something went wrong";
   const data = error.data || [];
   res.status(status).json({ message: message, errors: data });
 });
@@ -50,6 +50,8 @@ const Patient = require("./models/patient");
 const Doctor = require("./models/doctor");
 const Schedule = require("./models/doctor-schedule");
 const Subscription = require("./models/doctor-subscription");
+const RefreshToken = require("./models/refresh-token");
+const ResetToken = require("./models/reset-token");
 
 Account.hasMany(Contact);
 Contact.belongsTo(Account);
@@ -57,6 +59,12 @@ Contact.belongsTo(Account);
 Doctor.belongsTo(Account);
 Patient.belongsTo(Account);
 Admin.belongsTo(Account);
+
+Account.hasMany(RefreshToken);
+RefreshToken.belongsTo(Account);
+
+Account.hasMany(ResetToken);
+ResetToken.belongsTo(Account);
 
 Doctor.hasMany(Schedule);
 Schedule.belongsTo(Doctor);
@@ -69,8 +77,8 @@ Patient.belongsToMany(Doctor, { through: "appointment" });
 
 
 sequelize
-  // .sync({force: true})
-  .sync()
+  .sync({force: true})
+  // .sync()
   .then(() => console.log("Database Connected!"))
   .then(() => {
     app.listen(process.env.SERVER_PORT, () => {
