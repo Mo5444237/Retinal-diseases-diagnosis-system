@@ -15,7 +15,7 @@ exports.getProfile = async (req, res, next) => {
 
 exports.editProfile = async (req, res, next) => {
   const patientId = req.patientId;
-  const { patientData } = req.body;
+  const patientData = req.body;
   try {
     const patient = await Patient.findByPk(patientId);
 

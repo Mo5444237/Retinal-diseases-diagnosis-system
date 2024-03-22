@@ -2,6 +2,7 @@ const { validationResult } = require("express-validator");
 const Schedule = require("../models/doctor-schedule");
 const Appointment = require("../models/appointment");
 const Doctor = require("../models/doctor");
+const { literal } = require("sequelize");
 
 exports.getDoctorData = async (req, res, next) => {
   const doctorId = req.params.doctorId;
@@ -115,6 +116,7 @@ exports.getSchedule = async (req, res, next) => {
       where: {
         doctorId,
       },
+      order: [["day", "ASC"]],
     });
 
     res.status(200).json({ schedule });
@@ -137,8 +139,10 @@ exports.postSchedule = async (req, res, next) => {
 
   try {
     let schedule = await Schedule.findOne({
-      doctorId,
-      day,
+      where: {
+        doctorId,
+        day,
+      },
     });
 
     if (schedule) {

@@ -1,14 +1,13 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../util/db");
-const Account = require("./account");
 
 const ResetToken = sequelize.define(
-  "resetToken",
+  "ResetToken",
   {
     accountId: {
       type: DataTypes.UUID,
       references: {
-        model: Account,
+        model: "Account",
         key: "id",
       },
     },

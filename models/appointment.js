@@ -1,10 +1,8 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../util/db");
-const Doctor = require("./doctor");
-const Patient = require("./patient");
 
 const Appointment = sequelize.define(
-  "appointment",
+  "Appointment",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -15,14 +13,14 @@ const Appointment = sequelize.define(
     doctorId: {
       type: DataTypes.UUID,
       references: {
-        model: Doctor,
+        model: "Doctor",
         key: "id",
       },
     },
     patientId: {
       type: DataTypes.UUID,
       references: {
-        model: Patient,
+        model: "Patient",
         key: "id",
       },
     },

@@ -53,32 +53,32 @@ const Subscription = require("./models/doctor-subscription");
 const RefreshToken = require("./models/refresh-token");
 const ResetToken = require("./models/reset-token");
 
-Account.hasMany(Contact);
-Contact.belongsTo(Account);
+Account.hasMany(Contact, {as: "Contacts", foreignKey: "accountId"});
+Contact.belongsTo(Account, {foreignKey: "accountId"});
 
-Doctor.belongsTo(Account);
-Patient.belongsTo(Account);
-Admin.belongsTo(Account);
+Doctor.belongsTo(Account, {as: "Account", foreignKey: "accountId"});
+Patient.belongsTo(Account, {as: "Account", foreignKey: "accountId"});
+Admin.belongsTo(Account, {as: "Account", foreignKey: "accountId"});
 
-Account.hasMany(RefreshToken);
-RefreshToken.belongsTo(Account);
+Account.hasMany(RefreshToken, {as: "RefreshTokens", foreignKey: "accountId"});
+RefreshToken.belongsTo(Account, {foreignKey: "accountId"});
 
-Account.hasMany(ResetToken);
-ResetToken.belongsTo(Account);
+Account.hasMany(ResetToken, {as: "ResetTokens", foreignKey: "accountId"});
+ResetToken.belongsTo(Account, {foreignKey: "accountId"});
 
-Doctor.hasMany(Schedule);
-Schedule.belongsTo(Doctor);
+Doctor.hasMany(Schedule, {as: "Schedules", foreignKey: "doctorId"});
+Schedule.belongsTo(Doctor, {foreignKey: "doctorId"});
 
-Doctor.hasMany(Subscription);
-Subscription.belongsTo(Doctor);
+Doctor.hasMany(Subscription, {as: "Subscriptions", foreignKey: "doctorId"});
+Subscription.belongsTo(Doctor, {foreignKey: "doctorId"});
 
-Doctor.belongsToMany(Patient, { through: "appointment" });
-Patient.belongsToMany(Doctor, { through: "appointment" });
+Doctor.belongsToMany(Patient, { through: "Appointment", foreignKey: "doctorId"});
+Patient.belongsToMany(Doctor, { through: "Appointment", foreignKey: "patientId"});
 
 
 sequelize
-  .sync({force: true})
-  // .sync()
+  // .sync({force: true})
+  .sync()
   .then(() => console.log("Database Connected!"))
   .then(() => {
     app.listen(process.env.SERVER_PORT, () => {

@@ -1,27 +1,26 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../util/db");
-const Doctor = require("./doctor");
 
 const Schedule = sequelize.define(
-  "schedule",
+  "Schedule",
   {
     doctorId: {
       type: DataTypes.UUID,
       references: {
-        model: Doctor,
+        model: "Doctor",
         key: "id",
       },
       primaryKey: true,
     },
     day: {
       type: DataTypes.ENUM(
+        "Saturday",
+        "Sunday",
         "Monday",
         "Tuesday",
         "Wednesday",
         "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday"
+        "Friday"
       ),
       allowNull: false,
       primaryKey: true,

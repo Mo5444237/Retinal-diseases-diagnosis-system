@@ -37,7 +37,7 @@ exports.getAvailableAppointmentsValidation = [
   body("doctorId")
     .trim()
     .custom(async (value, { req }) => {
-      const doctor = await Doctor.findByPk(req.body.doctorId);
+      const doctor = await Doctor.findByPk(value);
       if (!doctor) {
         return Promise.reject("Invalid doctor data.");
       }

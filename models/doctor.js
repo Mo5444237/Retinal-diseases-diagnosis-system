@@ -1,12 +1,12 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../util/db");
-const Account = require("./account");
-// const Appointment = require("./appointment");
-// const { getAvailableTime } = require("../util/get-available-time");
-// const Schedule = require("./doctor-schedule");
+const Appointment = require("./appointment");
+const Schedule = require("./doctor-schedule");
+
+const { getAvailableTime } = require("../util/get-available-time");
 
 const Doctor = sequelize.define(
-  "doctor",
+  "Doctor",
   {
     id: {
       type: DataTypes.UUID,
@@ -16,7 +16,7 @@ const Doctor = sequelize.define(
     accountId: {
       type: DataTypes.UUID,
       references: {
-        model: Account,
+        model: "Account",
         key: "id",
       },
     },
@@ -47,57 +47,57 @@ const Doctor = sequelize.define(
   { timestamps: false }
 );
 
-// Doctor.prototype.getAvailableAppointments = async function (date) {
-//   const selectedDate = new Date(date);
-//   const currentAppointments = await Appointment.findAll({
-//     where: {
-//       doctorId: this.id,
-//       date: selectedDate,
-//     },
-//     attributes: ["time"],
-//   });
+Doctor.prototype.getAvailableAppointments = async function (date) {
+  const selectedDate = new Date(date);
+  const currentAppointments = await Appointment.findAll({
+    where: {
+      doctorId: this.id,
+      date: selectedDate,
+    },
+    attributes: ["time"],
+  });
 
-//   const dayNames = [
-//     "Sunday",
-//     "Monday",
-//     "Tuesday",
-//     "Wednesday",
-//     "Thursday",
-//     "Friday",
-//     "Saturday",
-//   ];
+  const dayNames = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
 
-//   // Get the day of the week as a number (0 to 6)
-//   const dayOfWeek = selectedDate.getDay();
+  // Get the day of the week as a number (0 to 6)
+  const dayOfWeek = selectedDate.getDay();
 
-//   // Map the number to the corresponding day name
-//   const dayName = dayNames[dayOfWeek];
+  // Map the number to the corresponding day name
+  const dayName = dayNames[dayOfWeek];
 
-//   const doctorSchedule = await Schedule.findOne({
-//     where: {
-//       doctorId: this.id,
-//       day: dayName,
-//     },
-//   });
+  const doctorSchedule = await Schedule.findOne({
+    where: {
+      doctorId: this.id,
+      day: dayName,
+    },
+  });
 
-//   if (!doctorSchedule) {
-//     const error = new Error(`Doctor isn\'t available on ${dayName}`);
-//     error.statusCode = 422;
-//     throw error;
-//   }
+  if (!doctorSchedule) {
+    const error = new Error(`Doctor isn\'t available on ${dayName}`);
+    error.statusCode = 422;
+    throw error;
+  }
 
-//   const startHour = doctorSchedule.startTime.split(":")[0];
-//   const endHour = doctorSchedule.endTime.split(":")[0];
+  const startHour = doctorSchedule.startTime.split(":")[0];
+  const endHour = doctorSchedule.endTime.split(":")[0];
 
-//   const appointments = getAvailableTime(+startHour, +endHour);
+  const appointments = getAvailableTime(+startHour, +endHour);
 
-//   currentAppointments.forEach((app) => {
-//     if (appointments[app.time.substring(0, 5)]) {
-//       delete appointments[app.time.substring(0, 5)];
-//     }
-//   });
+  currentAppointments.forEach((app) => {
+    if (appointments[app.time.substring(0, 5)]) {
+      delete appointments[app.time.substring(0, 5)];
+    }
+  });
 
-//   return appointments;
-// };
+  return appointments;
+};
 
 module.exports = Doctor;

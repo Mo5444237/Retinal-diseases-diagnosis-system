@@ -1,9 +1,8 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../util/db");
-const Account = require("./account");
 
 const RefreshToken = sequelize.define(
-  "refreshToken",
+  "RefreshToken",
   {
     token: {
       type: DataTypes.STRING,
@@ -13,7 +12,7 @@ const RefreshToken = sequelize.define(
     accountId: {
       type: DataTypes.UUID,
       references: {
-        model: Account,
+        model: "Account",
         key: "id",
       },
     },

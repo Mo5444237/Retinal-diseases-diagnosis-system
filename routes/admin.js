@@ -19,11 +19,11 @@ const router = app.Router();
 router.use(isAuth, isAdmin);
 
 router.get("/messages", getMessages);
-router.get("/messages/:messageId", getMessageDetails);
 router.post("/messages/reply", replyToMessageValiadion, sendReply);
+router.get("/messages/:messageId", getMessageDetails);
 
 router.get("/all", getAdmins);
-router.get("/:adminId", getAdminDetails);
+router.get("/all/:adminId", getAdminDetails);
 router.post("/add-admin", addAdminValiadion, addAdmin);
 router.delete("/delete-admin", deleteAdmin);
 

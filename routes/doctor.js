@@ -20,7 +20,7 @@ const {
 const { uploadMultibleImages, uploadSingleImage } = require("../middlewares/upload-images");
 const router = express.Router();
 
-router.get('/:doctorId', getDoctorData);
+router.get('/details/:doctorId', getDoctorData);
 
 // Protected routes
 router.use(isAuth, isDoctor);
