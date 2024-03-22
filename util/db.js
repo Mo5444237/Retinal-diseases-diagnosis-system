@@ -1,5 +1,4 @@
 const { Sequelize } = require("sequelize");
-const fs = require("fs");
 
 const sequelize = new Sequelize({
   dialect: "postgres",
@@ -14,13 +13,13 @@ const sequelize = new Sequelize({
     ssl: {
       require: true,
       rejectUnauthorized: true,
-      ca: fs.readFileSync(__dirname + "\\ca.pem"),
+      ca: process.env.DATABASE_CERTIFICATE,
     },
   },
   define: {
     freezeTableName: true,
   },
-  logging: false
+  logging: false,
 });
 
 
