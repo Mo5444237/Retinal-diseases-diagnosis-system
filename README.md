@@ -201,4 +201,4 @@ The Retinal Diseases Diagnosis System is a backend project developed using Node.
 Have questions or feedback? Reach out to us at:
 
 - Email: [mo5444237@gmail.com](mailto:mo5444237@gmail.com)
-- GitHub Issues: [Open an Issue](https://github.com/Mo5444237/ecommerce-shop-backend/issues)
+- GitHub Issues: [Open an Issue](https://github.com/Mo5444237/retinal-diseases-diagnosis-system/issues)
