@@ -59,7 +59,7 @@ exports.editProfile = async (req, res, next) => {
 };
 
 exports.getAppointments = async (req, res, next) => {
-  const date = new Date(req.body.date) || new Date().setHours(0, 0, 0, 0);
+  let date = new Date().toISOString();
   const doctorId = req.doctorId;
 
   //filtering and pagination
@@ -67,6 +67,10 @@ exports.getAppointments = async (req, res, next) => {
   const page = parseInt(filters.page, 10) || 1;
   const pageSize = parseInt(filters.pageSize, 10) || 10;
   const skip = (page - 1) * pageSize;
+
+  if (filters.date) {
+    date = new Date(filters.date);
+  }
 
   try {
     const appointments = await Appointment.findAndCountAll({
