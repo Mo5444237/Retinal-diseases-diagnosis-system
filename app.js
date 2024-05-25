@@ -1,21 +1,21 @@
 require("dotenv").config();
 
 const express = require("express");
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const compression = require('compression');
-const cors = require('cors');
-const path = require('path');
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const compression = require("compression");
+const cors = require("cors");
+const path = require("path");
 
-const authRoutes = require('./routes/auth');
-const patientRoutes = require('./routes/patient');
-const doctorRoutes = require('./routes/doctor');
-const adminRoutes = require('./routes/admin');
+const authRoutes = require("./routes/auth");
+const patientRoutes = require("./routes/patient");
+const doctorRoutes = require("./routes/doctor");
+const adminRoutes = require("./routes/admin");
 
-const app = express(); 
+const app = express();
 
 const corsOptions = {
-  origin: '*',
+  origin: "*",
   credentials: true,
 };
 
@@ -26,12 +26,10 @@ app.use(cookieParser());
 
 app.use("/images", express.static(path.join(__dirname, "images")));
 
-
-app.use('/auth', authRoutes);
-app.use('/patient', patientRoutes);
-app.use('/doctor', doctorRoutes);
-app.use('/admin', adminRoutes);
-
+app.use("/auth", authRoutes);
+app.use("/patient", patientRoutes);
+app.use("/doctor", doctorRoutes);
+app.use("/admin", adminRoutes);
 
 app.use((error, req, res, next) => {
   console.log("Error Middleware: \n" + error);
@@ -40,7 +38,6 @@ app.use((error, req, res, next) => {
   const data = error.data || [];
   res.status(status).json({ message: message, errors: data });
 });
-
 
 const sequelize = require("./util/db");
 const Account = require("./models/account");
@@ -53,28 +50,33 @@ const Subscription = require("./models/doctor-subscription");
 const RefreshToken = require("./models/refresh-token");
 const ResetToken = require("./models/reset-token");
 
-Account.hasMany(Contact, {as: "Contacts", foreignKey: "accountId"});
-Contact.belongsTo(Account, {foreignKey: "accountId"});
+Account.hasMany(Contact, { as: "Contacts", foreignKey: "accountId" });
+Contact.belongsTo(Account, { foreignKey: "accountId" });
 
-Doctor.belongsTo(Account, {as: "Account", foreignKey: "accountId"});
-Patient.belongsTo(Account, {as: "Account", foreignKey: "accountId"});
-Admin.belongsTo(Account, {as: "Account", foreignKey: "accountId"});
+Doctor.belongsTo(Account, { as: "Account", foreignKey: "accountId" });
+Patient.belongsTo(Account, { as: "Account", foreignKey: "accountId" });
+Admin.belongsTo(Account, { as: "Account", foreignKey: "accountId" });
 
-Account.hasMany(RefreshToken, {as: "RefreshTokens", foreignKey: "accountId"});
-RefreshToken.belongsTo(Account, {foreignKey: "accountId"});
+Account.hasMany(RefreshToken, { as: "RefreshTokens", foreignKey: "accountId" });
+RefreshToken.belongsTo(Account, { foreignKey: "accountId" });
 
-Account.hasMany(ResetToken, {as: "ResetTokens", foreignKey: "accountId"});
-ResetToken.belongsTo(Account, {foreignKey: "accountId"});
+Account.hasMany(ResetToken, { as: "ResetTokens", foreignKey: "accountId" });
+ResetToken.belongsTo(Account, { foreignKey: "accountId" });
 
-Doctor.hasMany(Schedule, {as: "Schedules", foreignKey: "doctorId"});
-Schedule.belongsTo(Doctor, {foreignKey: "doctorId"});
+Doctor.hasMany(Schedule, { as: "Schedules", foreignKey: "doctorId" });
+Schedule.belongsTo(Doctor, { foreignKey: "doctorId" });
 
-Doctor.hasMany(Subscription, {as: "Subscriptions", foreignKey: "doctorId"});
-Subscription.belongsTo(Doctor, {foreignKey: "doctorId"});
+Doctor.hasMany(Subscription, { as: "Subscriptions", foreignKey: "doctorId" });
+Subscription.belongsTo(Doctor, { foreignKey: "doctorId" });
 
-Doctor.belongsToMany(Patient, { through: "Appointment", foreignKey: "doctorId"});
-Patient.belongsToMany(Doctor, { through: "Appointment", foreignKey: "patientId"});
-
+Doctor.belongsToMany(Patient, {
+  through: { model: "Appointment", unique: false },
+  foreignKey: "doctorId",
+});
+Patient.belongsToMany(Doctor, {
+  through: { model: "Appointment", unique: false },
+  foreignKey: "patientId",
+});
 
 sequelize
   // .sync({force: true})
