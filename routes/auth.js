@@ -7,12 +7,14 @@ const {
   sendOTP,
   resetPassword,
   logout,
+  contactUs,
 } = require("../controllers/auth");
 const {
   signupValidation,
   loginValidation,
   changePasswordValidation,
   resetPasswordValidation,
+  contactValidation,
 } = require("../validation/auth");
 const isAuth = require("../middlewares/is-auth");
 const router = express.Router();
@@ -28,6 +30,7 @@ router.post(
 );
 router.post("/reset-token", resetPasswordValidation, sendOTP);
 router.put("/reset-password", changePasswordValidation, resetPassword);
+router.post("/contact", isAuth, contactValidation, contactUs);
 router.post("/logout", logout);
 
 module.exports = router;

@@ -72,3 +72,10 @@ exports.changePasswordValidation = [
 exports.resetPasswordValidation = [
   body("email", "Enter a valid email").trim().isEmail().normalizeEmail(),
 ];
+
+exports.contactValidation = [
+  body("title", "Enter a valid title").trim().notEmpty(),
+  body("description", "Enter a detailed decription.")
+    .trim()
+    .isLength({ min: 8, max: 255 }),
+];

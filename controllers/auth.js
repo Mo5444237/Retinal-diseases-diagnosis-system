@@ -15,6 +15,7 @@ const sendEmail = require("../util/send-email");
 const Admin = require("../models/admin");
 const RefreshToken = require("../models/refresh-token");
 const ResetToken = require("../models/reset-token");
+const Contact = require("../models/contact");
 
 exports.signup = async (req, res, next) => {
   const { email, password, role, name, DOB, address, phone } = req.body;
@@ -276,6 +277,40 @@ exports.changePassword = async (req, res, next) => {
     await user.save();
 
     res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.contactUs = async (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    const error = new Error("Validation failed.");
+    error.statusCode = 422;
+    error.data = errors.array();
+    return next(error);
+  }
+
+  try {
+    const { title, description } = req.body;
+    const userId = req.userId;
+    const user = await Account.findByPk(userId);
+
+    if (!user) {
+      const error = new Error("User not found");
+      error.status = 404;
+      throw error;
+    }
+
+    const newMessage = await Contact.create({
+      accountId: user.id,
+      email: user.email,
+      title,
+      description,
+    });
+
+    res.status(201).json({ message: "Message sent successfully." });
   } catch (error) {
     next(error);
   }
