@@ -26,12 +26,12 @@ router.get('/details/:doctorId', getDoctorData);
 router.use(isAuth, isDoctor);
 
 router.get('/profile', getProfile);
-router.put('/profile', editProfileValidation, uploadSingleImage('images/doctors', 'profileImg'), editProfile);
+router.put('/profile', editProfileValidation, uploadSingleImage('doctors', 'profileImg'), editProfile);
 router.get("/appointments", getAppointments);
 router.get("/appointments/:appointmentId", getAppointmentDetails);
 router.get("/schedule", getSchedule);
 router.post("/schedule", postScheduleValidation, postSchedule);
 router.post("/prescription", writePrescriptionValidation, writePrescription);
-router.post("/upload-attachment", uploadMultibleImages("images/appointments", "images"), uploadAppointmentAttachments);
+router.post("/upload-attachment", uploadMultibleImages("appointments", "images"), uploadAppointmentAttachments);
 
 module.exports = router;

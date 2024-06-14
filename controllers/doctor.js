@@ -2,7 +2,7 @@ const { validationResult } = require("express-validator");
 const Schedule = require("../models/doctor-schedule");
 const Appointment = require("../models/appointment");
 const Doctor = require("../models/doctor");
-const { literal } = require("sequelize");
+const cloudinary = require("cloudinary").v2;
 
 exports.getDoctorData = async (req, res, next) => {
   const doctorId = req.params.doctorId;
@@ -18,7 +18,10 @@ exports.getDoctorData = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
-    res.status(200).json({ doctor });
+    res.status(200).json({
+      ...doctor.dataValues,
+      profileImg: `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${doctor.profileImg}`,
+    });
   } catch (error) {
     next(error);
   }
@@ -28,7 +31,10 @@ exports.getProfile = async (req, res, next) => {
   const doctorId = req.doctorId;
   try {
     const doctor = await Doctor.findByPk(doctorId);
-    res.status(200).json({ doctor });
+    res.status(200).json({
+      ...doctor.dataValues,
+      profileImg: `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${doctor.profileImg}`,
+    });
   } catch (error) {
     next(error);
   }
@@ -41,8 +47,9 @@ exports.editProfile = async (req, res, next) => {
 
   try {
     const doctor = await Doctor.findByPk(doctorId);
+    const currentImage = doctor.profileImg;
     if (image) {
-      doctor.profileImg = image.path.replaceAll("\\", "/");
+      doctor.profileImg = image.filename;
     }
 
     doctor.name = updatedData.name || doctor.name;
@@ -51,7 +58,10 @@ exports.editProfile = async (req, res, next) => {
     doctor.DOB = updatedData.DOB || doctor.DOB;
     doctor.description = updatedData.description || doctor.description;
 
-    await doctor.save();
+    const result = await doctor.save();
+    if (result && currentImage) {
+      cloudinary.uploader.destroy(currentImage);
+    }
     res.status(200).json("Profile updated successfully.");
   } catch (error) {
     next(error);
@@ -106,7 +116,17 @@ exports.getAppointmentDetails = async (req, res, next) => {
       throw error;
     }
 
-    res.status(200).json({ appointment });
+    let appointmentImages;
+    if (appointment.images) {
+      appointmentImages = appointment.image.map(
+        (img) =>
+          `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${img}`
+      );
+    }
+
+    res
+      .status(200)
+      .json({ ...appointment.dataValues, images: appointmentImages });
   } catch (error) {
     next(error);
   }
@@ -225,7 +245,7 @@ exports.uploadAppointmentAttachments = async (req, res, next) => {
 
     console.log(appointment.images);
     const images = imagesData.map((file) => {
-      return file.path.replaceAll("\\", "/");
+      return file.filename;
     });
 
     appointment.images = [...appointment.images, ...images];
