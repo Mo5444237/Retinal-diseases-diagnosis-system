@@ -3,6 +3,7 @@ const Schedule = require("../models/doctor-schedule");
 const Appointment = require("../models/appointment");
 const Doctor = require("../models/doctor");
 const cloudinary = require("cloudinary").v2;
+const cloudinary = require("cloudinary").v2;
 
 exports.getDoctorData = async (req, res, next) => {
   const doctorId = req.params.doctorId;
@@ -22,6 +23,10 @@ exports.getDoctorData = async (req, res, next) => {
       ...doctor.dataValues,
       profileImg: `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${doctor.profileImg}`,
     });
+    res.status(200).json({
+      ...doctor.dataValues,
+      profileImg: `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${doctor.profileImg}`,
+    });
   } catch (error) {
     next(error);
   }
@@ -31,6 +36,10 @@ exports.getProfile = async (req, res, next) => {
   const doctorId = req.doctorId;
   try {
     const doctor = await Doctor.findByPk(doctorId);
+    res.status(200).json({
+      ...doctor.dataValues,
+      profileImg: `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${doctor.profileImg}`,
+    });
     res.status(200).json({
       ...doctor.dataValues,
       profileImg: `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${doctor.profileImg}`,
@@ -48,7 +57,9 @@ exports.editProfile = async (req, res, next) => {
   try {
     const doctor = await Doctor.findByPk(doctorId);
     const currentImage = doctor.profileImg;
+    const currentImage = doctor.profileImg;
     if (image) {
+      doctor.profileImg = image.filename;
       doctor.profileImg = image.filename;
     }
 
@@ -58,6 +69,10 @@ exports.editProfile = async (req, res, next) => {
     doctor.DOB = updatedData.DOB || doctor.DOB;
     doctor.description = updatedData.description || doctor.description;
 
+    const result = await doctor.save();
+    if (result && currentImage) {
+      cloudinary.uploader.destroy(currentImage);
+    }
     const result = await doctor.save();
     if (result && currentImage) {
       cloudinary.uploader.destroy(currentImage);
@@ -116,9 +131,9 @@ exports.getAppointmentDetails = async (req, res, next) => {
       throw error;
     }
 
-    let appointmentImages;
-    if (appointment.images) {
-      appointmentImages = appointment.image.map(
+    let appointmentImages = [];
+    if (appointment.images.length !== 0) {
+      appointmentImages = appointment.images.map(
         (img) =>
           `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${img}`
       );
@@ -245,6 +260,7 @@ exports.uploadAppointmentAttachments = async (req, res, next) => {
 
     console.log(appointment.images);
     const images = imagesData.map((file) => {
+      return file.filename;
       return file.filename;
     });
 
