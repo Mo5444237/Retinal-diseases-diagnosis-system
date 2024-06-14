@@ -3,7 +3,6 @@ const Schedule = require("../models/doctor-schedule");
 const Appointment = require("../models/appointment");
 const Doctor = require("../models/doctor");
 const cloudinary = require("cloudinary").v2;
-const cloudinary = require("cloudinary").v2;
 
 exports.getDoctorData = async (req, res, next) => {
   const doctorId = req.params.doctorId;
