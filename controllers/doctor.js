@@ -23,10 +23,6 @@ exports.getDoctorData = async (req, res, next) => {
       ...doctor.dataValues,
       profileImg: `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${doctor.profileImg}`,
     });
-    res.status(200).json({
-      ...doctor.dataValues,
-      profileImg: `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${doctor.profileImg}`,
-    });
   } catch (error) {
     next(error);
   }
@@ -36,10 +32,6 @@ exports.getProfile = async (req, res, next) => {
   const doctorId = req.doctorId;
   try {
     const doctor = await Doctor.findByPk(doctorId);
-    res.status(200).json({
-      ...doctor.dataValues,
-      profileImg: `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${doctor.profileImg}`,
-    });
     res.status(200).json({
       ...doctor.dataValues,
       profileImg: `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${doctor.profileImg}`,
@@ -57,9 +49,8 @@ exports.editProfile = async (req, res, next) => {
   try {
     const doctor = await Doctor.findByPk(doctorId);
     const currentImage = doctor.profileImg;
-    const currentImage = doctor.profileImg;
+
     if (image) {
-      doctor.profileImg = image.filename;
       doctor.profileImg = image.filename;
     }
 
@@ -73,10 +64,7 @@ exports.editProfile = async (req, res, next) => {
     if (result && currentImage) {
       cloudinary.uploader.destroy(currentImage);
     }
-    const result = await doctor.save();
-    if (result && currentImage) {
-      cloudinary.uploader.destroy(currentImage);
-    }
+
     res.status(200).json("Profile updated successfully.");
   } catch (error) {
     next(error);
@@ -260,7 +248,6 @@ exports.uploadAppointmentAttachments = async (req, res, next) => {
 
     console.log(appointment.images);
     const images = imagesData.map((file) => {
-      return file.filename;
       return file.filename;
     });
 
