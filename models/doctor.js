@@ -29,7 +29,7 @@ const Doctor = sequelize.define(
       allowNull: false,
     },
     DOB: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: false,
     },
     address: {

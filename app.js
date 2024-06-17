@@ -49,6 +49,7 @@ const Schedule = require("./models/doctor-schedule");
 const Subscription = require("./models/doctor-subscription");
 const RefreshToken = require("./models/refresh-token");
 const ResetToken = require("./models/reset-token");
+const Appointment = require("./models/appointment");
 
 Account.hasMany(Contact, { as: "Contacts", foreignKey: "accountId" });
 Contact.belongsTo(Account, { foreignKey: "accountId" });
@@ -70,16 +71,22 @@ Doctor.hasMany(Subscription, { as: "Subscriptions", foreignKey: "doctorId" });
 Subscription.belongsTo(Doctor, { foreignKey: "doctorId" });
 
 Doctor.belongsToMany(Patient, {
-  through: { model: "Appointment", unique: false },
+  through: Appointment,
   foreignKey: "doctorId",
-});
-Patient.belongsToMany(Doctor, {
-  through: { model: "Appointment", unique: false },
-  foreignKey: "patientId",
+  otherKey: "patientId",
 });
 
+Patient.belongsToMany(Doctor, {
+  through: Appointment,
+  foreignKey: "patientId",
+  otherKey: "doctorId",
+});
+
+Appointment.belongsTo(Doctor, { foreignKey: "doctorId" });
+Appointment.belongsTo(Patient, { foreignKey: "patientId" });
+
 sequelize
-  // .sync({force: true})
+  // .sync({alter: true})
   .sync()
   .then(() => console.log("Database Connected!"))
   .then(() => {

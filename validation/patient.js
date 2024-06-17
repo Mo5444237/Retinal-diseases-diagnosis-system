@@ -71,8 +71,8 @@ exports.makeAppointmentValidation = [
     .trim()
     .custom(async (value, { req }) => {
       const currentDate = new Date().setHours(0, 0, 0, 0);
-      const date = new Date(value);
-
+      const date = new Date(value).toISOString();
+      console.log(date)
       const differenceInMilliseconds = Math.abs(date - currentDate);
 
       const millisecondsInADay = 1000 * 60 * 60 * 24;
@@ -131,7 +131,7 @@ exports.editAppointmentValidation = [
     }
 
     const currentDate = new Date().setHours(0, 0, 0, 0);
-    const appointmentDate = new Date(appointment.date);
+    const appointmentDate = new Date(appointment.date).toISOString();
     const date = new Date(req.body.date);
 
     const differenceInMilliseconds = Math.abs(date - currentDate);
@@ -178,7 +178,7 @@ exports.cancelAppointmentValidation = [
         return Promise.reject("You are't allowed to cancel this appointment.");
       }
 
-      const appointmentDate = new Date(appointment.date);
+      const appointmentDate = new Date(appointment.date).toISOString();
       const currentDate = new Date();
 
       const differenceInMilliseconds = Math.abs(appointmentDate - currentDate);

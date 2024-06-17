@@ -2,6 +2,7 @@ const { validationResult } = require("express-validator");
 const Schedule = require("../models/doctor-schedule");
 const Appointment = require("../models/appointment");
 const Doctor = require("../models/doctor");
+const Patient = require("../models/patient");
 const cloudinary = require("cloudinary").v2;
 
 exports.getDoctorData = async (req, res, next) => {
@@ -71,7 +72,7 @@ exports.editProfile = async (req, res, next) => {
 };
 
 exports.getAppointments = async (req, res, next) => {
-  let date = new Date().toISOString();
+  let date = new Date();
   const doctorId = req.doctorId;
 
   //filtering and pagination
@@ -81,7 +82,7 @@ exports.getAppointments = async (req, res, next) => {
   const skip = (page - 1) * pageSize;
 
   if (filters.date) {
-    date = new Date(filters.date);
+    date = new Date(filters.date).toISOString();
   }
 
   try {
@@ -92,6 +93,12 @@ exports.getAppointments = async (req, res, next) => {
       },
       limit: pageSize,
       offset: skip,
+      include: [
+        {
+          model: Patient,
+          attributes: { exclude: ["password", "refreshTokens"] },
+        },
+      ],
     });
 
     res.status(200).json({ appointments });
