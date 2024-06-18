@@ -40,14 +40,15 @@ const Appointment = sequelize.define(
     prescription: {
       type: DataTypes.STRING,
     },
+    notes: {
+      type: DataTypes.STRING,
+    },
     images: {
       type: DataTypes.ARRAY(DataTypes.STRING),
-      defaultValue: []
-    } 
+      defaultValue: [],
+    },
   },
   { timestamps: false }
 );
-
-
 
 module.exports = Appointment;

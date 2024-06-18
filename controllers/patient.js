@@ -114,6 +114,12 @@ exports.getAppointmentDetails = async (req, res, next) => {
         id: appointmentId,
         patientId: patientId,
       },
+      include: [
+        {
+          model: Doctor,
+          attributes: { exclude: ["password", "refreshTokens"] },
+        },
+      ],
     });
 
     if (!appointment) {
@@ -122,7 +128,22 @@ exports.getAppointmentDetails = async (req, res, next) => {
       throw error;
     }
 
-    res.status(200).json({ appointmentDetials: appointment });
+    let appointmentImages = [];
+    if (appointment.images.length !== 0) {
+      appointmentImages = appointment.images.map(
+        (img) =>
+          `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${img}`
+      );
+    }
+
+    res
+      .status(200)
+      .json({
+        appointmentDetails: {
+          ...appointment.dataValues,
+          images: appointmentImages,
+        },
+      });
   } catch (error) {
     next(error);
   }
