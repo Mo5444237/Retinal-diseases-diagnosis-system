@@ -117,6 +117,12 @@ exports.getAppointmentDetails = async (req, res, next) => {
         id,
         doctorId,
       },
+      include: [
+        {
+          model: Patient,
+          attributes: { exclude: ["password", "refreshTokens"] },
+        },
+      ],
     });
 
     if (!appointment) {
