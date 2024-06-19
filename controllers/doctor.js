@@ -19,9 +19,15 @@ exports.getDoctorData = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
+
+    let profileImg;
+    if (doctor.profileImg) {
+      profileImg = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${doctor.profileImg}`;
+    }
+
     res.status(200).json({
       ...doctor.dataValues,
-      profileImg: `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${doctor.profileImg}`,
+      profileImg,
     });
   } catch (error) {
     next(error);
@@ -32,9 +38,14 @@ exports.getProfile = async (req, res, next) => {
   const doctorId = req.doctorId;
   try {
     const doctor = await Doctor.findByPk(doctorId);
+
+    let profileImg;
+    if (doctor.profileImg) {
+      profileImg = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${doctor.profileImg}`;
+    }
     res.status(200).json({
       ...doctor.dataValues,
-      profileImg: `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${doctor.profileImg}`,
+      profileImg,
     });
   } catch (error) {
     next(error);
@@ -65,7 +76,14 @@ exports.editProfile = async (req, res, next) => {
       cloudinary.uploader.destroy(currentImage);
     }
 
-    res.status(200).json("Profile updated successfully.");
+    let profileImg;
+    if (result.profileImg) {
+      profileImg = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${result.profileImg}`;
+    }
+    res.status(200).json({
+      message: "Profile updated successfully.",
+      profile: { ...result.dataValues, profileImg },
+    });
   } catch (error) {
     next(error);
   }
