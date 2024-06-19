@@ -51,7 +51,7 @@ exports.editProfile = async (req, res, next) => {
     const currentImage = doctor.profileImg;
 
     if (image) {
-      doctor.profileImg = image.filename;
+      doctor.profileImg = `${image.filename}.${image.mimetype.split("/")[1]}`;
     }
 
     doctor.name = updatedData.name || doctor.name;
